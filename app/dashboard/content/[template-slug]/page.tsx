@@ -40,7 +40,7 @@ function createNewContent(props: PROPS) {
     
     if (totalUsage>=5000)
     {
-        alert('You have exceeded max credit allowed')
+        console.log('You have exceeded max credit allowed')
         router.push('./dashboard/billing')
         return;
     }

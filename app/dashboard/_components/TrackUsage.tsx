@@ -32,14 +32,23 @@ function TrackUsage() {
         user&&GetData();
     },[updatecreditUsage&&user]);
 
-    const GetData=async()=>{
-        {/* @ts-ignore */}
-        const result:HISTORY[]=await db.select().from(AIOutput).where(
-            eq(AIOutput.createdBy,user?.primaryEmailAddress?.emailAddress)
-        )
-        GetTotalUsage(result)
-    }
-
+    const GetData = async (): Promise<void> => {
+        try {
+            if (user?.primaryEmailAddress?.emailAddress) {
+                const email = user.primaryEmailAddress.emailAddress;
+                const result = await db
+                    .select()
+                    .from(AIOutput)
+                    .where(eq(AIOutput.createdBy, email)) as HISTORY[];
+                
+                GetTotalUsage(result);
+            } else {
+                console.warn('User email address is not defined');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
     const GetTotalUsage=(result:HISTORY[])=>{
         let total:number=0;
         result.forEach(element => {
@@ -50,9 +59,9 @@ function TrackUsage() {
     }
   return (
     <div className='m-5'>
-        <div className='bg-blue-700 text-white p-3 rounded-lg'>
+        <div className='bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-white p-3 rounded-lg'>
             <h2 className='font-medium'>Credits</h2>
-            <div className='h-2 bg-blue-400 w-full rounded-full mt-3'>
+            <div className='h-2 bg-red-400 w-full rounded-full mt-3'>
                 <div className='h-2 bg-white rounded-full' 
                 style={{
                     width:(totalUsage/5000)*100+"%"
